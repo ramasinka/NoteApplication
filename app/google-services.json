@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "906929769533",
+    "project_id": "firebase-noteapplication"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906929769533:android:f2d1ae79d0166991",
+        "android_client_info": {
+          "package_name": "noteapp.voltasit.lt.noteapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "906929769533-qquamm88rc32dbibshkc3l72lkshkf4b.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "906929769533-pmippabv2pmcjg5pa3oihuijn38in5tg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "lt.voltasit.noteapp",
+            "certificate_hash": "df64d9c0276d7646667ce21f3c56e5942654106c"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-oG6CpK2Nq4RE9e9szT6HMdZe0_mDyHc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
