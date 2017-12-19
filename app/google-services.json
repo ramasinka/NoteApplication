@@ -1,72 +1,33 @@
 {
   "project_info": {
-    "project_number": "906929769533",
-    "project_id": "firebase-noteapplication"
+    "project_number": "1093002262117",
+    "project_id": "noteapp-d900a"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:906929769533:android:f2d1ae79d0166991",
-        "android_client_info": {
-          "package_name": "lt.voltasit.noteapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "906929769533-qquamm88rc32dbibshkc3l72lkshkf4b.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "906929769533-pmippabv2pmcjg5pa3oihuijn38in5tg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "lt.voltasit.noteapp",
-            "certificate_hash": "df64d9c0276d7646667ce21f3c56e5942654106c"
-          }
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC-oG6CpK2Nq4RE9e9szT6HMdZe0_mDyHc"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:906929769533:android:3ef2f2013075aacd",
+        "mobilesdk_app_id": "1:1093002262117:android:3ef2f2013075aacd",
         "android_client_info": {
           "package_name": "noteapp.voltasit.lt.noteapplication"
         }
       },
       "oauth_client": [
         {
-          "client_id": "906929769533-enidlsqgpkqm57bm4bpi4l4d7lljk7kn.apps.googleusercontent.com",
+          "client_id": "1093002262117-b232qcdmvhgo744i90qrbjq4pbvg91t4.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1093002262117-u823bhi8klqpv64h0tq5b38q19oi741i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "noteapp.voltasit.lt.noteapplication",
-            "certificate_hash": "4c08e16c743e0eb7ed6e1aa59a6cc0e490283b66"
+            "certificate_hash": "afab500526ca38d164e87434c69db361a693d309"
           }
-        },
-        {
-          "client_id": "906929769533-qquamm88rc32dbibshkc3l72lkshkf4b.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC-oG6CpK2Nq4RE9e9szT6HMdZe0_mDyHc"
+          "current_key": "AIzaSyCC600DbAu0qAcA26ufTtIZhMzZhijng4c"
         }
       ],
       "services": {

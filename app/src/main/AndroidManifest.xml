@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".NoteAppApplication"
@@ -11,14 +14,106 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
+        <activity
+            android:name=".views.LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".views.NotesView"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.ShareListActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.RegisteredActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="Main"-->
+        <!--android:label="Learn2Crack USER PANEL"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.PasswordResetActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.ChangePassword"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.ShoppingListView"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--&lt;!&ndash; Edit List Activity &ndash;&gt;-->
+
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.EditShoppingListActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--&lt;!&ndash; Edit Item Activity &ndash;&gt;-->
+
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.EditShoppingItemsActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--&lt;!&ndash; Add Product Activity &ndash;&gt;-->
+
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.NewShoppingListActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.activity.NewShoppingListItemActivity"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="lt.kk.shoppinglist.views.ShoppingListItemsView"-->
+        <!--android:label="@string/app_name"></activity>-->
+
+        <!--<activity-->
+        <!--android:name="test"-->
+        <!--android:label="@string/app_name"></activity>-->
+
     </application>
+
+    <!--<application-->
+    <!--android:name=".NoteAppApplication"-->
+    <!--android:allowBackup="true"-->
+    <!--android:label="@string/app_name"-->
+    <!--android:roundIcon="@mipmap/ic_launcher_round"-->
+    <!--android:supportsRtl="true"-->
+    <!--android:theme="@style/AppTheme">-->
+    <!--<activity android:nanoteapp.voltasit.lt.noteapplication.LoginActivityvity">-->
+    <!--<intent-filter>-->
+    <!--<action android:name="android.intent.action.MAIN" />-->
+
+    <!--<category android:name="android.intent.category.LAUNCHER" />-->
+    <!--</intent-filter>-->
+    <!--</activity>-->
+
+    <!--<activity-->
+    <!--android:name=".MainActivity"-->
+    <!--android:label="@string/app_name"></activity>-->
+    <!--</application>-->
 
 </manifest>
