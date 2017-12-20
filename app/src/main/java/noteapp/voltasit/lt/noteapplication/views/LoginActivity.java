@@ -22,11 +22,16 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.List;
 
 import noteapp.voltasit.lt.noteapplication.MainActivity;
 import noteapp.voltasit.lt.noteapplication.R;
@@ -135,32 +140,75 @@ public class LoginActivity extends AppCompatActivity implements
         Log.d(TAG, "Connected:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount user = result.getSignInAccount();
-            if(saveUser(user.getDisplayName(), user.getEmail())){
-                loadNotesView();
-            }
-        } else {
-            // Signed out, show unauthenticated UI.
-            updateUI(false);
+            saveUser(user.getDisplayName(), user.getEmail());
+            loadNotesView();
         }
     }
 
-    private boolean saveUser(String name, String email) {
-        ParseObject user = new ParseObject("User");
-        user.put("userName", name);
-        user.put("email", email);
-        user.saveInBackground();
-//        user.saveInBackground(new SaveCallback() {
-//            public void done(ParseException e) {
-//                if (e == null) {
-//                    Log.i("User", "Save Succeeded");
-//                } else {
-//                    Log.i("User", "Save Failed");
-//                    e.getMessage();
+    private void saveUser(String name, String email) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
+        query.whereEqualTo("email", email);
+        query.whereEqualTo("userName", name);
+
+        try {
+            List<ParseObject> parseObjects = query.find();
+            if (parseObjects.isEmpty()) {
+                ParseObject user = new ParseObject("UserParse");
+                user.put("userName", name);
+                user.put("email", email);
+                user.saveInBackground(new SaveCallback() {
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Log.i("User", "Save Succeeded");
+                        } else {
+                            Log.i("User", "Save Failed");
+                            e.getMessage();
+                        }
+                    }
+                });
+            }
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+//        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
+//        try {
+//            List<ParseObject> parseObjects = query.find();
+//            if(!parseObjects.isEmpty()){
+//                for (ParseObject parseObject : parseObjects) {
+//                    if (!parseObject.get("email").equals(email) && !parseObject.get("userName").equals(name)) {
+//
+//                    }
 //                }
 //            }
-//        });
-        return true;
-    }
+//            for (ParseObject parseObject : parseObjects) {
+//                if (parseObject.get("email").equals(email) && parseObject.get("userName").equals(name)) {
+//                    return false;
+//                } else {
+//                    ParseObject user = new ParseObject("UserParse");
+//                    user.put("userName", name);
+//                    user.put("email", email);
+////        user.saveInBackground();
+//                    user.saveInBackground(new SaveCallback() {
+//                        public void done(ParseException e) {
+//                            if (e == null) {
+//                                Log.i("User", "Save Succeeded");
+//                            } else {
+//                                Log.i("User", "Save Failed");
+//                                e.getMessage();
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return true;
 
     @Override
     public void onClick(View view) {
@@ -186,27 +234,20 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void sigIn() {
-        UserService userService = new UserService();
-
         if ((!inputEmail.getText().toString().equals(""))
                 && (!inputPassword.getText().toString().equals(""))) {
 
-            if(userService.checkIfUserExist(inputEmail.getText().toString(), inputPassword.getText().toString())){
-                Intent myIntent = new Intent(this, NotesView.class);
-                startActivityForResult(myIntent, 0);
-                finish();
-            }
+            saveUser(inputEmail.getText().toString(), inputPassword.getText().toString());
+            Intent myIntent = new Intent(this, NotesView.class);
+            startActivityForResult(myIntent, 0);
+            finish();
 
         } else if ((!inputEmail.getText().toString().equals(""))) {
-            Toast.makeText(getApplicationContext(),
-                    "Password field empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Password field empty", Toast.LENGTH_SHORT).show();
         } else if ((!inputPassword.getText().toString().equals(""))) {
-            Toast.makeText(getApplicationContext(),
-                    "Email field empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Email field empty", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(),
-                    "Email and Password field are empty",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Email and Password field are empty", Toast.LENGTH_SHORT).show();
         }
     }
 

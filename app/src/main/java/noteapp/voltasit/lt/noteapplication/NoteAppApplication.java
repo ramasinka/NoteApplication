@@ -28,19 +28,21 @@ public class NoteAppApplication extends Application {
         );
 
 
-//        ParseObject testObject = new ParseObject("TestObject");
-//        testObject.put("Test", "test");
-//        testObject.saveInBackground();
-//        testObject.saveInBackground(new SaveCallback() {
-//            public void done(ParseException e) {
-//                if (e == null) {
-//                    Log.i("Parse", "Save Succeeded");
-//                } else {
-//                    Log.i("Parse", "Save Failed");
-//                    e.getMessage();
-//                }
-//            }
-//        });
+        ParseObject testObject = new ParseObject("Test123");
+        testObject.put("Test", "test");
+        testObject.put("Testasd", 123);
+        testObject.put("Test", "test");
+        testObject.saveInBackground();
+        testObject.saveInBackground(new SaveCallback() {
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.i("Parse", "Save Succeeded");
+                } else {
+                    Log.i("Parse", "Save Failed");
+                    e.getMessage();
+                }
+            }
+        });
 
 //        ParseUser.enableAutomaticUser();
 //        ParseACL defaultACL = new ParseACL();

@@ -5,28 +5,24 @@ package noteapp.voltasit.lt.noteapplication.model;
  */
 
 public class Note {
-    private long id;
+    private String id;
     private long categoryId;
     private String title;
     private String content;
 
 
-    public Note(String title, String content) {
+    public Note(String objectId, String title, String content) {
+        this.id = objectId;
         this.title = title;
         this.content = content;
     }
 
-    public Note(long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
