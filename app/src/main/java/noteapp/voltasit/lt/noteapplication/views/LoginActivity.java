@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
 
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 007;
 
     private GoogleApiClient mGoogleApiClient;
@@ -58,6 +58,9 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
 
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                 .applicationId("NoteAppId")
@@ -137,6 +140,13 @@ public class LoginActivity extends AppCompatActivity implements
         if (result.isSuccess()) {
             GoogleSignInAccount user = result.getSignInAccount();
             saveUser(user.getDisplayName(), user.getEmail(), null);
+        }else{
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            if (currentUser != null) {
+
+            //TODO take hashed username
+                loadNotesViews(null);
+            }
         }
     }
 
@@ -278,6 +288,11 @@ public class LoginActivity extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser == null) {
+            loadNotesViews(null);
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
