@@ -6,4 +6,6 @@
 
     <color name="year">#999999</color>
     <color name="title">#222222</color>
+
+    <color name="list_background">#6F8EA2</color>
 </resources>

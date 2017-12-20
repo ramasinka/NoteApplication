@@ -21,9 +21,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -35,7 +32,8 @@ import java.util.List;
 
 import noteapp.voltasit.lt.noteapplication.MainActivity;
 import noteapp.voltasit.lt.noteapplication.R;
-import noteapp.voltasit.lt.noteapplication.services.UserService;
+import noteapp.voltasit.lt.noteapplication.model.User;
+import noteapp.voltasit.lt.noteapplication.views.activity.RegisterActivity;
 
 /**
  * Created by Romas Noreika on 2017-12-17.
@@ -83,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements
         inputEmail = findViewById(R.id.loginEmail);
         inputPassword = findViewById(R.id.loginPassword);
 
-        loginErrorMsg = (TextView) findViewById(R.id.login_error);
+        loginErrorMsg = findViewById(R.id.login_error);
 
         btnSignIn.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
@@ -98,17 +96,35 @@ public class LoginActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        // Customizing G+ button
         btnSignIn.setSize(SignInButton.SIZE_STANDARD);
         btnSignIn.setScopes(gso.getScopeArray());
     }
 
-    private void loadNotesView() {
-        Intent myIntent = new Intent(this, NotesView.class);
-        startActivityForResult(myIntent, 0);
+
+    private void loadNotesViews(User user) {
+        Intent intent = new Intent(this, NotesView.class);
+        intent.putExtra("email", user.getEmail());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivityForResult(intent, 0);
         finish();
     }
 
+    private String getUserName(final String email) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
+        String userName = null;
+        try {
+            List<ParseObject> parseObjects = query.find();
+            for (ParseObject post : parseObjects) {
+                if (post.get("email").equals(email)) {
+                    userName = (String) post.get("userName");
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return userName;
+    }
 
     private void signInWithGmail() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -116,62 +132,73 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
-
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "Connected:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount user = result.getSignInAccount();
-            saveUser(user.getDisplayName(), user.getEmail());
-            loadNotesView();
+            saveUser(user.getDisplayName(), user.getEmail(), null);
         }
     }
 
-    private void saveUser(String name, String email) {
+    private void saveUser(final String name, final String email, String password) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
         query.whereEqualTo("email", email);
-        query.whereEqualTo("userName", name);
+
+        if (name == null) {
+            String userName = getUserName(email);
+            ParseUser.logInInBackground(userName, password);
+
+        } else {
+            query.whereEqualTo("userName", name);
+        }
+
+        if (password == null) {
+            query.whereEqualTo("password", "");
+        } else {
+            query.whereEqualTo("password", password);
+
+        }
 
         try {
             List<ParseObject> parseObjects = query.find();
-            if (parseObjects.isEmpty()) {
-                ParseObject user = new ParseObject("UserParse");
-                user.put("userName", name);
-                user.put("email", email);
-                user.saveInBackground(new SaveCallback() {
+            if (parseObjects.isEmpty() && password == null) {
+                ParseObject parseUser = new ParseObject("UserParse");
+                final User user = new User(name, email);
+                parseUser.put("userName", name);
+                parseUser.put("email", email);
+                parseUser.put("password", "");
+                parseUser.saveInBackground(new SaveCallback() {
                     public void done(ParseException e) {
                         if (e == null) {
                             Log.i("User", "Save Succeeded");
+                            loadNotesViews(user);
                         } else {
                             Log.i("User", "Save Failed");
                             e.getMessage();
                         }
                     }
                 });
+            } else {
+                User user = new User(name, email, password);
+                if (!parseObjects.isEmpty() && password == null) {
+                    loadNotesViews(user);
+                } else if (password != null && !parseObjects.isEmpty()) {
+                    loadNotesViews(user);
+                } else {
+                    loadRegisterView();
+                }
             }
 
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadRegisterView() {
+        Intent myIntent = new Intent(this, RegisterActivity.class);
+        startActivityForResult(myIntent, 0);
+        finish();
     }
 
 
@@ -237,10 +264,8 @@ public class LoginActivity extends AppCompatActivity implements
         if ((!inputEmail.getText().toString().equals(""))
                 && (!inputPassword.getText().toString().equals(""))) {
 
-            saveUser(inputEmail.getText().toString(), inputPassword.getText().toString());
-            Intent myIntent = new Intent(this, NotesView.class);
-            startActivityForResult(myIntent, 0);
-            finish();
+            saveUser(null, inputEmail.getText().toString(), inputPassword.getText().toString());
+
 
         } else if ((!inputEmail.getText().toString().equals(""))) {
             Toast.makeText(getApplicationContext(), "Password field empty", Toast.LENGTH_SHORT).show();

@@ -11,6 +11,18 @@ public class User {
     private boolean emailVerified;
     private String email;
 
+
+    public User(String userName, String email, String password) {
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User(String name, String email) {
+        this.userName = name;
+        this.email = email;
+    }
+
     public long getId() {
         return id;
     }

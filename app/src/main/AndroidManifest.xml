@@ -32,6 +32,21 @@
             android:name=".views.NotesView"
             android:label="@string/app_name"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".views.activity.RegisterActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".views.activity.EditNoteActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".views.activity.NewNoteActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
         <!--<activity-->
         <!--android:name="lt.kk.shoppinglist.views.activity.ShareListActivity"-->
         <!--android:label="@string/app_name"></activity>-->
