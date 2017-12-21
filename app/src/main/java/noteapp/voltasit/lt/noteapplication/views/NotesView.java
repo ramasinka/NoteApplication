@@ -1,6 +1,8 @@
 package noteapp.voltasit.lt.noteapplication.views;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +19,7 @@ import android.view.Window;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -50,7 +53,6 @@ public class NotesView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.activity_main);
@@ -61,17 +63,7 @@ public class NotesView extends AppCompatActivity {
         createNoteBtn = findViewById(R.id.action_create_note);
         recyclerView = findViewById(R.id.recycler_view);
 
-        notesAdapter = new NotesAdapter(notesList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(notesAdapter);
 
-        Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.item_decorator);
-
-        recyclerView.addItemDecoration(new DividerItemDecorate(dividerDrawable));
-        refreshNotesList();
-        setProgressBarIndeterminateVisibility(false);
 
         createNoteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,11 +78,6 @@ public class NotesView extends AppCompatActivity {
     @Override
     protected void onStart() {
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser == null) {
-            loadLoginView();
-        }
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -98,6 +85,25 @@ public class NotesView extends AppCompatActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         mGoogleApiClient.connect();
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        String email = (String) getIntent().getExtras().get("email");
+        if (currentUser == null && email.isEmpty()) {
+            loadLoginView();
+        }
+        else{
+            notesAdapter = new NotesAdapter(notesList);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(notesAdapter);
+
+            Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.item_decorator);
+
+            recyclerView.addItemDecoration(new DividerItemDecorate(dividerDrawable));
+            refreshNotesList();
+            setProgressBarIndeterminateVisibility(false);
+        }
         super.onStart();
     }
 
@@ -120,6 +126,10 @@ public class NotesView extends AppCompatActivity {
             }
 
             case R.id.action_logout: {
+                SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.clear();
+                editor.commit();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                         new ResultCallback<Status>() {
                             @Override

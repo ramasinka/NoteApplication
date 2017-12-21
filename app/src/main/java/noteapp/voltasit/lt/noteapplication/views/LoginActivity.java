@@ -1,7 +1,9 @@
 package noteapp.voltasit.lt.noteapplication.views;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -29,8 +31,8 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
+import java.util.Map;
 
-import noteapp.voltasit.lt.noteapplication.MainActivity;
 import noteapp.voltasit.lt.noteapplication.R;
 import noteapp.voltasit.lt.noteapplication.model.User;
 import noteapp.voltasit.lt.noteapplication.views.activity.RegisterActivity;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    public static final String MyPREFERENCES = "MyPrefs";
     private static final int RC_SIGN_IN = 007;
 
     private GoogleApiClient mGoogleApiClient;
@@ -55,12 +58,11 @@ public class LoginActivity extends AppCompatActivity implements
     private EditText inputPassword, inputEmail;
     private TextView loginErrorMsg;
 
+    SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
 
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                 .applicationId("NoteAppId")
@@ -69,13 +71,14 @@ public class LoginActivity extends AppCompatActivity implements
                 .build()
         );
 
-//        Parse.enableLocalDatastore(this);
-//        ParseUser currentUser = ParseUser.getCurrentUser();
-//        if (currentUser != null) {
-//            loadNotesView();
-//        }
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            loadNotesViews(null);
+        }
 
         setContentView(R.layout.activity_login);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         btnSignIn = findViewById(R.id.btn_sign_in);
         btnLogin = findViewById(R.id.btnLogin);
@@ -106,9 +109,9 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void loadNotesViews(User user) {
         Intent intent = new Intent(this, NotesView.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("email", user.getEmail());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivityForResult(intent, 0);
         finish();
     }
@@ -136,73 +139,91 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "Connected:" + result.isSuccess());
-        if (result.isSuccess()) {
-            GoogleSignInAccount user = result.getSignInAccount();
-            saveUser(user.getDisplayName(), user.getEmail(), null);
-        }else{
-            ParseUser currentUser = ParseUser.getCurrentUser();
-            if (currentUser != null) {
+        if (result != null) {
+            Log.d(TAG, "Connected:" + result.isSuccess());
+            if (result.isSuccess()) {
+                GoogleSignInAccount user = result.getSignInAccount();
+                saveUser(user.getDisplayName(), user.getEmail(), null);
+            } else {
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if (currentUser != null) {
 
-            //TODO take hashed username
-                loadNotesViews(null);
+                    //TODO take hashed username
+
+                }
+            }
+        } else {
+            Map<String, ?> all = sharedpreferences.getAll();
+            loadNotesViews(createUserFromPreferences(all));
+        }
+    }
+
+    private User createUserFromPreferences(Map<String, ?> allEntries) {
+        User user = new User();
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            if(entry.getKey().contains("email")){
+                user.setEmail((String) entry.getValue());
+            }if(entry.getKey().contains("userName")){
+                user.setUserName((String) entry.getValue());
+            }
+        }
+        return user;
+    }
+
+    private void saveUser(final String name, final String email, final String password) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
+        query.whereEqualTo("email", email);
+        final SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        if (name == null) {
+            String userName = getUserName(email);
+            if (userName.isEmpty()) {
+                //TODO pranesima mest
+            } else {
+                ParseUser.logInInBackground(userName, password);
+                addPreferences(editor, userName, email);
+                loadNotesViews(new User(userName, email, password));
+            }
+
+        } else {
+            query.whereEqualTo("userName", name);
+            query.whereEqualTo("password", "");
+            final User user = new User(name, email, password);
+            try {
+                List<ParseObject> parseObjects = query.find();
+                if (parseObjects.isEmpty()) {
+                    ParseObject parseUser = new ParseObject("UserParse");
+                    parseUser.put("userName", name);
+                    parseUser.put("email", email);
+                    parseUser.put("password", "");
+                    parseUser.saveInBackground(new SaveCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Log.i("User", "Save Succeeded");
+                                ParseUser.logInInBackground(user.getEmail(), user.getPassword());
+                                addPreferences(editor, user.getUserName(), user.getEmail());
+                                loadNotesViews(user);
+                            } else {
+                                Log.i("User", "Save Failed");
+                                e.getMessage();
+                            }
+                        }
+                    });
+                } else {
+                    addPreferences(editor, user.getUserName(), user.getEmail());
+                    loadNotesViews(user);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    private void saveUser(final String name, final String email, String password) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserParse");
-        query.whereEqualTo("email", email);
-
-        if (name == null) {
-            String userName = getUserName(email);
-            ParseUser.logInInBackground(userName, password);
-
-        } else {
-            query.whereEqualTo("userName", name);
-        }
-
-        if (password == null) {
-            query.whereEqualTo("password", "");
-        } else {
-            query.whereEqualTo("password", password);
-
-        }
-
-        try {
-            List<ParseObject> parseObjects = query.find();
-            if (parseObjects.isEmpty() && password == null) {
-                ParseObject parseUser = new ParseObject("UserParse");
-                final User user = new User(name, email);
-                parseUser.put("userName", name);
-                parseUser.put("email", email);
-                parseUser.put("password", "");
-                parseUser.saveInBackground(new SaveCallback() {
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Log.i("User", "Save Succeeded");
-                            loadNotesViews(user);
-                        } else {
-                            Log.i("User", "Save Failed");
-                            e.getMessage();
-                        }
-                    }
-                });
-            } else {
-                User user = new User(name, email, password);
-                if (!parseObjects.isEmpty() && password == null) {
-                    loadNotesViews(user);
-                } else if (password != null && !parseObjects.isEmpty()) {
-                    loadNotesViews(user);
-                } else {
-                    loadRegisterView();
-                }
-            }
-
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    private void addPreferences(SharedPreferences.Editor editor, String userName, String email) {
+        editor.putString("loggedIn", "yes");
+        editor.putString("userName", userName);
+        editor.putString("email", email);
+        editor.commit();
     }
 
     private void loadRegisterView() {
@@ -288,10 +309,12 @@ public class LoginActivity extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser == null) {
-            loadNotesViews(null);
-        }
+//        ParseUser currentUser = ParseUser.getCurrentUser();
+////        getIntent().getExtras().get("email");
+//
+//        if (currentUser == null) {
+//            loadNotesViews(null);
+//        }
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -306,13 +329,19 @@ public class LoginActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
 
+        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedpreferences.edit();
+//        editor.clear();
+//        editor.commit();
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
+        if (opr.isDone() || sharedpreferences.contains("loggedIn")) {
+            if (opr.isDone()) {
+                Log.d(TAG, "Got cached sign-in");
+                GoogleSignInResult result = opr.get();
+                handleSignInResult(result);
+            } else {
+                handleSignInResult(null);
+            }
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device

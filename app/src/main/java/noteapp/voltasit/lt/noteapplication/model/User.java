@@ -18,6 +18,9 @@ public class User {
         this.email = email;
     }
 
+    public User() {
+    }
+
     public User(String name, String email) {
         this.userName = name;
         this.email = email;
