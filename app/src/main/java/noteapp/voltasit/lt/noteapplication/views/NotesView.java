@@ -19,7 +19,6 @@ import android.view.Window;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -63,8 +62,6 @@ public class NotesView extends AppCompatActivity {
         createNoteBtn = findViewById(R.id.action_create_note);
         recyclerView = findViewById(R.id.recycler_view);
 
-
-
         createNoteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +71,7 @@ public class NotesView extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onStart() {
@@ -90,13 +88,14 @@ public class NotesView extends AppCompatActivity {
         String email = (String) getIntent().getExtras().get("email");
         if (currentUser == null && email.isEmpty()) {
             loadLoginView();
-        }
-        else{
-            notesAdapter = new NotesAdapter(notesList);
+        } else {
+            notesAdapter = new NotesAdapter(notesList, this);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(notesAdapter);
+
+
 
             Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.item_decorator);
 
@@ -175,4 +174,7 @@ public class NotesView extends AppCompatActivity {
             }
         });
     }
+
+
+
 }

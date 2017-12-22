@@ -25,16 +25,18 @@ public class EditNoteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_edit_note);
 
         Intent intent = this.getIntent();
 
-        titleEditText = (EditText) findViewById(R.id.noteTitle);
-        contentEditText = (EditText) findViewById(R.id.noteContent);
+        titleEditText = findViewById(R.id.noteTitle);
+        contentEditText = findViewById(R.id.noteContent);
 
         if (intent.getExtras() != null) {
-            note = new Note("todo", "todo", "todo");
+            String noteId = (String) intent.getExtras().get("noteId");
+            String noteTitle = intent.getExtras().getString("noteTitle");
+            String noteContent = intent.getExtras().getString("noteContent");
+            note = new Note(noteId, noteTitle, noteContent);
 
             titleEditText.setText(note.getTitle());
             contentEditText.setText(note.getContent());
