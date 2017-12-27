@@ -59,6 +59,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                                 intent.putExtra("noteId", note.getId());
                                 intent.putExtra("noteTitle", note.getTitle());
                                 intent.putExtra("noteContent", note.getContent());
+                                intent.putExtra("email", note.getUserEmail());
                                 context.startActivity(intent);
                                 break;
                             case R.id.removeNote:

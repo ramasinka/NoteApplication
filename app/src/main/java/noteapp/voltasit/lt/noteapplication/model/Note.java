@@ -9,6 +9,7 @@ public class Note {
     private long categoryId;
     private String title;
     private String content;
+    private String userEmail;
 
 
     public Note(String objectId, String title, String content) {
@@ -17,6 +18,13 @@ public class Note {
         this.content = content;
     }
 
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 
     public String getId() {
         return id;

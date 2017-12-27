@@ -71,10 +71,10 @@ public class LoginActivity extends AppCompatActivity implements
                 .build()
         );
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            loadNotesViews(null);
-        }
+//        ParseUser currentUser = ParseUser.getCurrentUser();
+//        if (currentUser != null) {
+//            loadNotesViews(null);
+//        }
 
         setContentView(R.layout.activity_login);
 

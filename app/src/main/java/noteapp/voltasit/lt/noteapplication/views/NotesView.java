@@ -35,7 +35,7 @@ import noteapp.voltasit.lt.noteapplication.R;
 import noteapp.voltasit.lt.noteapplication.adapters.NotesAdapter;
 import noteapp.voltasit.lt.noteapplication.decorations.DividerItemDecorate;
 import noteapp.voltasit.lt.noteapplication.model.Note;
-import noteapp.voltasit.lt.noteapplication.views.activity.NewNoteActivity;
+import noteapp.voltasit.lt.noteapplication.views.activity.EditNoteActivity;
 
 /**
  * Created by Romas Noreika on 2017-12-17.
@@ -65,7 +65,7 @@ public class NotesView extends AppCompatActivity {
         createNoteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), NewNoteActivity.class);
+                Intent intent = new Intent(getApplicationContext(), EditNoteActivity.class);
                 intent.putExtra("email", getIntent().getStringExtra("email"));
                 startActivity(intent);
             }
@@ -164,6 +164,7 @@ public class NotesView extends AppCompatActivity {
                     for (ParseObject post : postList) {
                         if (post.get("email").equals(email)) {
                             Note note = new Note(post.getObjectId(), post.getString("title"), post.getString("content"));
+                            note.setUserEmail(post.getString("email"));
                             notesList.add(note);
                         }
                     }

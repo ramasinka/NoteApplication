@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     notesList.clear();
                     for (ParseObject post : postList) {
                         Note note = new Note(post.getObjectId(), post.getString("title"), post.getString("content"));
+                        note.setUserEmail(post.getString("email"));
                         notesList.add(note);
                     }
                     notesAdapter.notifyDataSetChanged();
